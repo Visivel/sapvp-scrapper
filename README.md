@@ -7,10 +7,10 @@ Este projeto pode ajudar outras tierlists a crescerem caso queiram migrar o banc
 voce pode ler mais sobre a api aqui (apesar de estar faltando alguns endpoints): https://docs.sapvp.com/
 
 # Sumário
-- [Como rodar](#)
-- [Requests de um ranking especifico](#)
-- [Requests de todo o ranking global](#)
-- [Para fazer...](#)
+- [Como rodar](#como-rodar)
+- [Requests de um ranking especifico](#request-do-ranking-de-um-modo-especifico)
+- [Requests de todo o ranking global](#requests-do-ranking-global)
+- [Para fazer...](#todo)
 
 ## Como rodar
 
