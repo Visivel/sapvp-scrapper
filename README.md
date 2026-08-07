@@ -6,6 +6,17 @@ Este projeto pode ajudar outras tierlists a crescerem caso queiram migrar o banc
 
 voce pode ler mais sobre a api aqui (apesar de estar faltando alguns endpoints): https://docs.sapvp.com/
 
+### Rate limit
+
+Recentemente foi implementado um sistema de rate limit, entao caso ocorre alguma falha esse provavelmente é o motivo, favor abrir uma [issue](https://github.com/Visivel/sapvp-scrapper/issues) caso ocorra algum problema, entretanto ja foi implementado e configurado propriamente no scrapper, os testes apontam nao ter erro. Caso queira configurar voce pode mudar no arquivo essa linha:
+
+```js
+const limiter = new Bottleneck({
+    maxConcurrent: 1, // maximo de requisicoes durante o periodo
+    minTime: 1580 // tempo ate a proxima requisicao (em milissegundos)
+})
+```
+
 # Sumário
 - [Como rodar](#como-rodar)
 - [Requests de um ranking especifico](#request-do-ranking-de-um-modo-especifico)
@@ -96,16 +107,6 @@ modos
 ```
 ## Requests do ranking global
 
-> [!NOTE]
-> relembrando que o scrapper global ja nao funciona mais, botaram um rate limit no proximo dia kk
-
-```
-pagina 38
-Error: 429 Too Many Requests
-{"error": "Limite de requisições excedido. Tente novamente mais tarde."}
-```
-continuando...
-
 ```
 GET /api/players/filter/top?page={pagina}&size=30
 ```
@@ -189,6 +190,6 @@ Exemplo de requisição do ranking:
 
 ## Todo
 
-* Implementar um rate limit
+* ~~Implementar um rate limit~~
 * Implementar suporte a JSON
 * (?) Remapear a api por endpoints não documentados
