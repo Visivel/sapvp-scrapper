@@ -1,4 +1,6 @@
 const fs = require('fs')
+const path = require('path')
+const Bottleneck = require('bottleneck')
 
 const modalidades = [
     "CRYSTAL",
@@ -9,7 +11,12 @@ const modalidades = [
     "AXE"
 ]
 
-async function getPage(pagina){
+const limiter = new Bottleneck({
+    maxConcurrent: 1,
+    minTime: 1580
+})
+
+const wrapPage = limiter.wrap(async function getPage(pagina){
     const res = await fetch(
         `https://www.sapvp.com/api/players/filter/top?page=${pagina}&size=30`,
         {
@@ -28,7 +35,7 @@ async function getPage(pagina){
     }
 
     return res.json()
-}
+})
 
 function csvbosta(valor){
     return `"${String(valor ?? "").replaceAll('"', '""')}"`
@@ -40,7 +47,7 @@ async function main() {
     for (let pagina = 0; pagina <= 99; pagina++) {
         console.log(`pagina ${pagina}`)
 
-        const data = await getPage(pagina)
+        const data = await wrapPage(pagina)
 
         if(!data.content?.length)
             break
@@ -93,10 +100,10 @@ async function main() {
         )
     ].join("\n")
 
-    const dir = path.dirname("./tiers/GLOBAL.csv")
+    const dir = path.dirname(`./tiers/GLOBAL.csv`)
     fs.mkdirSync(dir, {recursive:true})
  
-    fs.writeFileSync("./tiers/GLOBAL.csv", csv, 'utf8')
+    fs.writeFileSync(`./tiers/GLOBAL.csv`, csv, 'utf8')
 
     console.log(`\npronto: ${players.length} jogadores salvos`)
 }

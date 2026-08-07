@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const Bottleneck = require('bottleneck')
 
 const modalidades = [
     "CRYSTAL",
@@ -10,7 +11,12 @@ const modalidades = [
     "AXE"
 ]
 
-async function getPage(modalidade, pagina) {
+const limiter = new Bottleneck({
+    maxConcurrent: 1,
+    minTime: 1580
+})
+
+const wrapPage = limiter.wrap(async function getPage(modalidade, pagina){
     const res = await fetch(
         `https://www.sapvp.com/api/players/distribution?modality=${modalidade}&page=${pagina}&limit=300`,
         {
@@ -29,7 +35,7 @@ async function getPage(modalidade, pagina) {
     }
 
     return res.json()
-}
+    })
 
 function csvEscape(valor) {
     return `"${String(valor ?? "").replaceAll('"', '""')}"`
@@ -44,7 +50,7 @@ async function main() {
         for (let pagina = 0; pagina < 100; pagina++) {
             console.log(`pagina ${pagina}`)
 
-            const data = await getPage(modalidade, pagina)
+            const data = await wrapPage(modalidade, pagina)
 
             if (!Array.isArray(data) || !data.length)
                 break
@@ -77,7 +83,7 @@ async function main() {
             )
         ].join("\n")
 
-        const dir = path.dirname("./tiers/${modalidade}.csv")
+        const dir = path.dirname(`./tiers/${modalidade}.csv`)
         fs.mkdirSync(dir, {recursive:true})
 
         fs.writeFileSync(`./tiers/${modalidade}.csv`, csv, 'utf8')
